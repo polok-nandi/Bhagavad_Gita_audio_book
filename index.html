@@ -1,163 +1,731 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bhagavad Gita Audio Playlist</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      margin: 0;
-      padding: 20px;
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-      font-size: 2em;
-      letter-spacing: 1px;
-    }
-    .track {
-      background: white;
-      padding: 15px 20px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-      cursor: pointer;
-    }
-    .track:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-      background: #fef7e0;
-    }
-    .track p {
-      margin: 0 0 8px;
-      font-weight: bold;
-      color: #444;
-      transition: color 0.3s ease;
-    }
-    .track.active {
-      background: #ffd966;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      transform: scale(1.02);
-    }
-    .track.active p {
-      color: #880004;
-    }
-    audio {
-      width: 100%;
-      border-radius: 8px;
-      outline: none;
-      transition: all 0.3s ease;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhagavad Gita - Audio Chapters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e6e9f0 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #880004 0%, #a30005 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .player-container {
+            padding: 25px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .player {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .current-track {
+            margin-bottom: 20px;
+        }
+        
+        .current-track h3 {
+            color: #880004;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .current-track p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #880004, #c62828);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #880004;
+            font-size: 1.8rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        
+        .control-btn:hover {
+            background: rgba(136, 0, 4, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .play-btn {
+            background: #880004;
+            color: white;
+            font-size: 2.2rem;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 10px rgba(136, 0, 4, 0.3);
+        }
+        
+        .play-btn:hover {
+            background: #a30005;
+            transform: scale(1.05);
+        }
+        
+        .volume-container {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .volume-icon {
+            color: #880004;
+            font-size: 1.2rem;
+        }
+        
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #880004;
+            cursor: pointer;
+        }
+        
+        .playlist {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .playlist h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .track {
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .track:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+            background: #fef7e0;
+        }
+        
+        .track-number {
+            background: #f0f0f0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .track-content {
+            flex: 1;
+        }
+        
+        .track p {
+            margin: 0 0 5px;
+            font-weight: bold;
+            color: #444;
+            transition: color 0.3s ease;
+            font-size: 1.05rem;
+        }
+        
+        .track-duration {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        
+        .track.active {
+            background: #ffd966;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transform: scale(1.01);
+        }
+        
+        .track.active p {
+            color: #880004;
+        }
+        
+        .track.active .track-number {
+            background: #880004;
+            color: white;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #880004;
+            margin: 10px 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eaeaea;
+            background: #f8f9fa;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .player-container {
+                padding: 15px;
+            }
+            
+            .controls {
+                gap: 15px;
+            }
+            
+            .control-btn {
+                font-size: 1.5rem;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .play-btn {
+                font-size: 1.8rem;
+                width: 55px;
+                height: 55px;
+            }
+            
+            .track {
+                padding: 12px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>Bhagavad Gita</h1>
+            <p>Audio Chapters - Divine Wisdom for Modern Life</p>
+        </header>
+        
+        <div class="player-container">
+            <div class="player">
+                <div class="current-track">
+                    <h3>Chapter 01: Arjun Vishad Yoga</h3>
+                    <p>Now Playing</p>
+                </div>
+                
+                <div class="loading" id="loading">Loading audio...</div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="time-info">
+                        <span class="current-time">0:00</span>
+                        <span class="duration">0:00</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn prev-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                            <line x1="5" y1="19" x2="5" y2="5"></line>
+                        </svg>
+                    </button>
+                    
+                    <button class="control-btn play-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </button>
+                    
+                    <button class="control-btn next-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="5" x2="19" y2="19"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="volume-container">
+                    <span class="volume-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </span>
+                    <input type="range" min="0" max="100" value="80" class="volume-slider">
+                </div>
+            </div>
+        </div>
+        
+        <div class="playlist">
+            <h2>Audio Chapters</h2>
+            
+            <div class="track active" data-src="https://www.dropbox.com/scl/fi/6z37ncom7yt8naoxqvqx4/chapter_01_arjun_vishad_yoga_bhagavad_gita.mp3?rlkey=kkb1egajs7ywz50vsolvcgy30&st=g9hdif38&dl=1" data-duration="15:30">
+                <div class="track-number">01</div>
+                <div class="track-content">
+                    <p>Chapter 01: Arjun Vishad Yoga</p>
+                    <div class="track-duration">15:30</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/x8fqlrms1kcqkao2oko0n/chapter_02_sankhya_yoga_bhagavad_gita.mp3?rlkey=crg27vnf7xi2ip9gbo6ihh1w2&st=x2nyylks&dl=1" data-duration="22:15">
+                <div class="track-number">02</div>
+                <div class="track-content">
+                    <p>Chapter 02: Sankhya Yoga</p>
+                    <div class="track-duration">22:15</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/lxr8ucwhdmq4cafvsqwau/chapter_03_karma_yoga_bhagavad_gita.mp3?rlkey=t0skqj3f5rzoq75xb4pauh9ga&st=xdhvnqf7&dl=1" data-duration="18:45">
+                <div class="track-number">03</div>
+                <div class="track-content">
+                    <p>Chapter 03: Karma Yoga</p>
+                    <div class="track-duration">18:45</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/e7t879idxc1ii1oy5diuq/chapter_04_gyan_yoga_bhagavad_gita.mp3?rlkey=laqglob297zdnd33u20c7h72f&st=87p0cju8&dl=1" data-duration="20:10">
+                <div class="track-number">04</div>
+                <div class="track-content">
+                    <p>Chapter 04: Gyan Yoga</p>
+                    <div class="track-duration">20:10</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/jwk1anp0b1jhhwlsgqr5r/chapter_05_karma_sanyas_yoga_bhagavad_gita.mp3?rlkey=1cj21pf9wzxth5vy7h4v0n9c2&st=k2kj6on7&dl=1" data-duration="16:55">
+                <div class="track-number">05</div>
+                <div class="track-content">
+                    <p>Chapter 05: Karma Sanyas Yoga</p>
+                    <div class="track-duration">16:55</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/bwxciq924zn6onyjjtszw/chapter_06_dhyan_yoga.mp3?rlkey=wpepmos73at3ovhlzd7ce4kii&st=bqg7179d&dl=1" data-duration="19:40">
+                <div class="track-number">06</div>
+                <div class="track-content">
+                    <p>Chapter 06: Dhyan Yoga</p>
+                    <div class="track-duration">19:40</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/unzaoddl3m3wrg35dc7s5/chapter_07_bigyan_yoga.mp3?rlkey=yilwtwdescp0ni4hyuyiox839&st=dhypnhll&dl=1" data-duration="17:25">
+                <div class="track-number">07</div>
+                <div class="track-content">
+                    <p>Chapter 07: Bigyan Yoga</p>
+                    <div class="track-duration">17:25</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/joo15krhmhyob6lcyvqlq/chapter_08_akshara_brahma_yoga.mp3?rlkey=lwrhadipsnnnsex5qb769hy6k&st=0mdds9xm&dl=1" data-duration="21:05">
+                <div class="track-number">08</div>
+                <div class="track-content">
+                    <p>Chapter 08: Akshara Brahma Yoga</p>
+                    <div class="track-duration">21:05</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/vdhvv4w4e6pofrl4jy0r9/chapter_09_raja_vidya_raja_guhya_yoga.mp3?rlkey=q75tqa852ae6fw7r90gu7sjq5&st=4tfqoeox&dl=1" data-duration="23:15">
+                <div class="track-number">09</div>
+                <div class="track-content">
+                    <p>Chapter 09: Raja Vidya Raja Guhya Yoga</p>
+                    <div class="track-duration">23:15</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/aqhomjyxb7r4n2um62r6o/chapter_10_vibhuti_yoga.mp3?rlkey=lqsvk6f1y3ux9aalnkofz5z3c&st=z7mnlzsh&dl=1" data-duration="19:50">
+                <div class="track-number">10</div>
+                <div class="track-content">
+                    <p>Chapter 10: Vibhuti Yoga</p>
+                    <div class="track-duration">19:50</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/j9k80qwo2qwq094m6lyba/chapter_11_vishwaroop_darshana_yoga.mp3?rlkey=cqvopwks4d3ikkkoh8cky0we1&st=lrleqqzh&dl=1" data-duration="25:20">
+                <div class="track-number">11</div>
+                <div class="track-content">
+                    <p>Chapter 11: Vishwaroop Darshana Yoga</p>
+                    <div class="track-duration">25:20</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/89vrw7buuna3vglpcqon6/chapter_12_bhakti_yoga.mp3?rlkey=qi2x79nnavw9d8bjq0vhkmq1f&st=72ghgh9h&dl=1" data-duration="14:45">
+                <div class="track-number">12</div>
+                <div class="track-content">
+                    <p>Chapter 12: Bhakti Yoga</p>
+                    <div class="track-duration">14:45</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/9y375gxxi9rrezr40xxoi/chapter_13_prakriti_purush_vivek_yoga.mp3?rlkey=xapioyauwi87cifffmd7dne7c&st=pkx93g5d&dl=1" data-duration="22:30">
+                <div class="track-number">13</div>
+                <div class="track-content">
+                    <p>Chapter 13: Prakriti Purush Vivek Yoga</p>
+                    <div class="track-duration">22:30</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/qomrad2l77p53r4tpddkz/chapter_14_gunatraya_vibhag_yoga.mp3?rlkey=va3h5p8rvxb0fv60h72tolj0v&st=qwsvzvuv&dl=1" data-duration="18:15">
+                <div class="track-number">14</div>
+                <div class="track-content">
+                    <p>Chapter 14: Gunatraya Vibhag Yoga</p>
+                    <div class="track-duration">18:15</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/evkwscj0gtmdy8kbmp36d/chapter_15_purushottam_yoga.mp3?rlkey=3cknt7rnjq8fuwkr4lq82w2li&st=r4ngtd9i&dl=1" data-duration="16:40">
+                <div class="track-number">15</div>
+                <div class="track-content">
+                    <p>Chapter 15: Purushottam Yoga</p>
+                    <div class="track-duration">16:40</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/7gr90tge5mqz8lbidllpd/chapter_16_daivasura_sampad_vibhag_yoga.mp3?rlkey=io07cc51ged3zjsr69nqsijf6&st=qjo9o59t&dl=1" data-duration="20:55">
+                <div class="track-number">16</div>
+                <div class="track-content">
+                    <p>Chapter 16: Daivasura Sampad Vibhag Yoga</p>
+                    <div class="track-duration">20:55</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/sgsz6qx7ewidxxh78hpxn/chapter_17_sraddhatray_vibag_yog.mp3?rlkey=7lhbsx417fn1sm2bnkgz334zk&st=soe23bwb&dl=1" data-duration="19:10">
+                <div class="track-number">17</div>
+                <div class="track-content">
+                    <p>Chapter 17: Sraddhatray Vibag Yoga</p>
+                    <div class="track-duration">19:10</div>
+                </div>
+            </div>
+            
+            <div class="track" data-src="https://www.dropbox.com/scl/fi/wqavup7di347uusj50cuw/chapter_18_moksha_yoga.mp3?rlkey=nqa3uerwt8zocno6wai86xxxl&st=1vdglok2&dl=1" data-duration="28:35">
+                <div class="track-number">18</div>
+                <div class="track-content">
+                    <p>Chapter 18: Moksha Yoga</p>
+                    <div class="track-duration">28:35</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 Bhagavad Gita Audio Player | Divine Wisdom for All</p>
+        </footer>
+    </div>
 
-  <h2>Bhagavad Gita - Audio Chapters</h2>
-
-  <div class="track">
-    <p>Chapter 01: Arjun Vishad Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/6z37ncom7yt8naoxqvqx4/chapter_01_arjun_vishad_yoga_bhagavad_gita.mp3?rlkey=kkb1egajs7ywz50vsolvcgy30&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 02: Sankhya Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/x8fqlrms1kcqkao2oko0n/chapter_02_sankhya_yoga_bhagavad_gita.mp3?rlkey=crg27vnf7xi2ip9gbo6ihh1w2&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 03: Karma Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/lxr8ucwhdmq4cafvsqwau/chapter_03_karma_yoga_bhagavad_gita.mp3?rlkey=t0skqj3f5rzoq75xb4pauh9ga&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 04: Gyan Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/e7t879idxc1ii1oy5diuq/chapter_04_gyan_yoga_bhagavad_gita.mp3?rlkey=laqglob297zdnd33u20c7h72f&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 05: Karma Sanyas Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/jwk1anp0b1jhhwlsgqr5r/chapter_05_karma_sanyas_yoga_bhagavad_gita.mp3?rlkey=1cj21pf9wzxth5vy7h4v0n9c2&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 06: Dhyan Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/bwxciq924zn6onyjjtszw/chapter_06_dhyan_yoga.mp3?rlkey=wpepmos73at3ovhlzd7ce4kii&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 07: Bigyan Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/unzaoddl3m3wrg35dc7s5/chapter_07_bigyan_yoga.mp3?rlkey=yilwtwdescp0ni4hyuyiox839&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 08: Akshara Brahma Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/joo15krhmhyob6lcyvqlq/chapter_08_akshara_brahma_yoga.mp3?rlkey=lwrhadipsnnnsex5qb769hy6k&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 09: Raja Vidya Raja Guhya Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/vdhvv4w4e6pofrl4jy0r9/chapter_09_raja_vidya_raja_guhya_yoga.mp3?rlkey=q75tqa852ae6fw7r90gu7sjq5&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 10: Vibhuti Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/aqhomjyxb7r4n2um62r6o/chapter_10_vibhuti_yoga.mp3?rlkey=lqsvk6f1y3ux9aalnkofz5z3c&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 11: Vishwaroop Darshana Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/j9k80qwo2qwq094m6lyba/chapter_11_vishwaroop_darshana_yoga.mp3?rlkey=cqvopwks4d3ikkkoh8cky0we1&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 12: Bhakti Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/89vrw7buuna3vglpcqon6/chapter_12_bhakti_yoga.mp3?rlkey=qi2x79nnavw9d8bjq0vhkmq1f&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 13: Prakriti Purush Vivek Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/9y375gxxi9rrezr40xxoi/chapter_13_prakriti_purush_vivek_yoga.mp3?rlkey=xapioyauwi87cifffmd7dne7c&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 14: Gunatraya Vibhag Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/qomrad2l77p53r4tpddkz/chapter_14_gunatraya_vibhag_yoga.mp3?rlkey=va3h5p8rvxb0fv60h72tolj0v&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 15: Purushottam Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/evkwscj0gtmdy8kbmp36d/chapter_15_purushottam_yoga.mp3?rlkey=3cknt7rnjq8fuwkr4lq82w2li&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 16: Daivasura Sampad Vibhag Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/7gr90tge5mqz8lbidllpd/chapter_16_daivasura_sampad_vibhag_yoga.mp3?rlkey=io07cc51ged3zjsr69nqsijf6&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 17: Sraddhatray Vibag Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/sgsz6qx7ewidxxh78hpxn/chapter_17_sraddhatray_vibag_yog.mp3?rlkey=7lhbsx417fn1sm2bnkgz334zk&raw=1"></audio>
-  </div>
-
-  <div class="track">
-    <p>Chapter 18: Moksha Yoga</p>
-    <audio controls src="https://www.dropbox.com/scl/fi/wqavup7di347uusj50cuw/chapter_18_moksha_yoga.mp3?rlkey=nqa3uerwt8zocno6wai86xxxl&raw=1"></audio>
-  </div>
-
-  <script>
-    // Active state animation on play
-    const tracks = document.querySelectorAll('.track');
-    tracks.forEach(track => {
-      const audio = track.querySelector('audio');
-      audio.addEventListener('play', () => {
-        tracks.forEach(t => t.classList.remove('active'));
-        track.classList.add('active');
-      });
-    });
-  </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Audio element
+            const audio = new Audio();
+            let currentTrackIndex = 0;
+            const tracks = document.querySelectorAll('.track');
+            const playBtn = document.querySelector('.play-btn');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const progressBar = document.querySelector('.progress');
+            const currentTimeEl = document.querySelector('.current-time');
+            const durationEl = document.querySelector('.duration');
+            const volumeSlider = document.querySelector('.volume-slider');
+            const currentTrackTitle = document.querySelector('.current-track h3');
+            const loadingEl = document.getElementById('loading');
+            
+            // Format time from seconds to MM:SS
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+            
+            // Update progress bar and time
+            function updateProgress() {
+                const { currentTime, duration } = audio;
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                
+                currentTimeEl.textContent = formatTime(currentTime);
+                
+                if (!isNaN(duration)) {
+                    durationEl.textContent = formatTime(duration);
+                }
+            }
+            
+            // Set progress bar on click
+            function setProgress(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audio.duration;
+                
+                audio.currentTime = (clickX / width) * duration;
+            }
+            
+            // Play/Pause functionality
+            function togglePlay() {
+                if (audio.paused) {
+                    audio.play().catch(e => {
+                        console.error("Error playing audio:", e);
+                        loadingEl.style.display = 'block';
+                    });
+                    playBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    `;
+                } else {
+                    audio.pause();
+                    playBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    `;
+                }
+            }
+            
+            // Change track
+            function changeTrack(index) {
+                // Remove active class from all tracks
+                tracks.forEach(track => track.classList.remove('active'));
+                
+                // Add active class to current track
+                tracks[index].classList.add('active');
+                
+                // Update current track index
+                currentTrackIndex = index;
+                
+                // Set audio source
+                const trackSrc = tracks[index].getAttribute('data-src');
+                audio.src = trackSrc;
+                
+                // Update current track title
+                currentTrackTitle.textContent = tracks[index].querySelector('p').textContent;
+                
+                // Reset progress
+                progressBar.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+                durationEl.textContent = tracks[index].getAttribute('data-duration');
+                
+                // Show loading
+                loadingEl.style.display = 'block';
+                
+                // Play the track
+                audio.play().then(() => {
+                    loadingEl.style.display = 'none';
+                    playBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    `;
+                }).catch(e => {
+                    console.error("Error playing audio:", e);
+                    loadingEl.textContent = "Error loading audio. Please check your connection.";
+                });
+            }
+            
+            // Previous track
+            function prevTrack() {
+                currentTrackIndex--;
+                if (currentTrackIndex < 0) {
+                    currentTrackIndex = tracks.length - 1;
+                }
+                changeTrack(currentTrackIndex);
+            }
+            
+            // Next track
+            function nextTrack() {
+                currentTrackIndex++;
+                if (currentTrackIndex > tracks.length - 1) {
+                    currentTrackIndex = 0;
+                }
+                changeTrack(currentTrackIndex);
+            }
+            
+            // Set volume
+            function setVolume() {
+                audio.volume = volumeSlider.value / 100;
+            }
+            
+            // Handle back button for APK
+            function handleBackButton() {
+                if (audio && !audio.paused) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    playBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    `;
+                }
+                
+                // For APK, you might need additional handling here
+                // depending on your framework (Cordova, Capacitor, etc.)
+                if (window.history.length > 1) {
+                    window.history.back();
+                }
+            }
+            
+            // Event Listeners
+            playBtn.addEventListener('click', togglePlay);
+            prevBtn.addEventListener('click', prevTrack);
+            nextBtn.addEventListener('click', nextTrack);
+            audio.addEventListener('timeupdate', updateProgress);
+            audio.addEventListener('ended', nextTrack);
+            audio.addEventListener('canplay', () => {
+                loadingEl.style.display = 'none';
+            });
+            audio.addEventListener('waiting', () => {
+                loadingEl.style.display = 'block';
+            });
+            volumeSlider.addEventListener('input', setVolume);
+            
+            // Click on track to play
+            tracks.forEach((track, index) => {
+                track.addEventListener('click', () => {
+                    changeTrack(index);
+                });
+            });
+            
+            // Click on progress bar to seek
+            document.querySelector('.progress-bar').addEventListener('click', setProgress);
+            
+            // Back button handling for mobile/APK
+            document.addEventListener('backbutton', handleBackButton, false);
+            
+            // Also handle browser back button
+            window.addEventListener('popstate', handleBackButton);
+            
+            // Initialize with first track
+            changeTrack(0);
+            
+            // Prevent right-click and disable context menu to discourage downloading
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable keyboard shortcuts for saving
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+S and Ctrl+U
+                if ((e.ctrlKey && e.key === 's') || (e.ctrlKey && e.key === 'u')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Handle back button on Android (Escape key)
+                if (e.key === 'Escape') {
+                    handleBackButton();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
